@@ -12,7 +12,7 @@ config_version=5
 
 config/name="First Game"
 run/main_scene="res://scenes/game.tscn"
-config/features=PackedStringArray("4.2", "Forward Plus")
+config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -24,6 +24,10 @@ MultiplayerManager="*res://scripts/multiplayer/multiplayer_manager.gd"
 
 window/size/always_on_top=true
 window/vsync/vsync_mode=0
+
+[dotnet]
+
+project/assembly_name="First Game"
 
 [input]
 
