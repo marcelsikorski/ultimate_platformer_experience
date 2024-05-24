@@ -1,33 +1,34 @@
 extends CharacterBody2D
 
+@export var jump_height_curve: Curve
+@export var jump_held_max_time_ms: int
+@export var jump_held_modifier: float = 0.5
 
 const SPEED = 130.0
 const JUMP_VELOCITY = -300.0
-var jump_held_time: float
+var jump_start_time_ms: int
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @onready var animated_sprite = $AnimatedSprite2D
 
+func _unhandled_input(event):
+	if event.is_action_pressed("jump") and is_on_floor():
+		jump_start_time_ms = Time.get_ticks_msec()
+	if event.is_action_released("jump") and is_on_floor():
+		var jump_held_time_ms: int = Time.get_ticks_msec() - jump_start_time_ms
+		var time_held_fraction = clamp(float(jump_held_time_ms) / float(jump_held_max_time_ms), 0, 1)
+		var additional_jump = float(JUMP_VELOCITY)*jump_held_modifier*jump_height_curve.sample(time_held_fraction)
+		velocity.y = JUMP_VELOCITY + additional_jump
+		jump_start_time_ms = 0
+
 func _physics_process(delta):
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta
-
-	# Handle jump.
-	if Input.is_action_pressed("jump") and is_on_floor(): #is_action_just_pressed <- nie mozna bh
-		jump_held_time -= 5
-
-	# Handle jump.
-	if Input.is_action_just_released("jump") and is_on_floor():
-		if jump_held_time <= -50:
-			velocity.y = JUMP_VELOCITY + jump_held_time
-			jump_held_time = 0
-		else:
-			velocity.y = JUMP_VELOCITY - 50
-			jump_held_time = 0
-			
+		
+		
 	# Get the input direction: -1, 0, 1
 	var direction = Input.get_axis("move_left", "move_right")
 	
