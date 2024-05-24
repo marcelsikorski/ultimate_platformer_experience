@@ -45,6 +45,7 @@ func _unhandled_input(event):
 func _physics_process(delta):
 	# Add the gravity.
 	if not is_on_floor():
+		jump_start_time_ms = 0
 		velocity.y += gravity * delta
 		
 	# Get the input direction: -1, 0, 1
@@ -58,7 +59,10 @@ func _physics_process(delta):
 	
 	# Play animations
 	if is_on_floor():
-		if direction == 0:
+		if jump_start_time_ms != 0:
+			# should be charging animation
+			animated_sprite.play("jump")
+		elif direction == 0:
 			animated_sprite.play("idle")
 		else:
 			animated_sprite.play("run")
