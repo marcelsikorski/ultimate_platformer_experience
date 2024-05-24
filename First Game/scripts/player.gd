@@ -22,7 +22,7 @@ func _ready():
 				cliff_detector = child
 
 func wants_to_jump_imediately()->bool:
-	return direction != 0 and cliff_detector.is_at_the_edge(direction)
+	return direction != 0 #and cliff_detector.is_at_the_edge(direction)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("jump") and is_on_floor():

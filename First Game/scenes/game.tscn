@@ -422,8 +422,8 @@ sources/0 = SubResource("TileSetAtlasSource_ashvg")
 
 [sub_resource type="Curve" id="Curve_molsi"]
 min_value = 2.13163e-14
-_data = [Vector2(0, 2.13163e-14), 0.0, -1.35706, 0, 0, Vector2(0.471204, 0.404624), 0.858703, -0.388141, 1, 1, Vector2(0.882199, 1), 0.142765, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0.0078534, 0.00313413), 0.0, -1.35706, 0, 0, Vector2(0.882199, 1), 0.142765, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_cn5tm"]
 distance = 1.0
