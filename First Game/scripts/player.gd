@@ -10,12 +10,27 @@ var jump_start_time_ms: int
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-
+@export var cliff_detector: CliffDetector
+var direction
 @onready var animated_sprite = $AnimatedSprite2D
+
+func _ready():
+	if cliff_detector != null:
+		var children = get_children()
+		for child in children:
+			if child.name == "CliffDetector":
+				cliff_detector = child
+
+func wants_to_jump_imediately(direction)->bool:
+	return direction != 0 and cliff_detector.is_at_the_edge(direction)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("jump") and is_on_floor():
-		jump_start_time_ms = Time.get_ticks_msec()
+		if wants_to_jump_imediately(direction):
+			print("JUMP")
+			velocity.y = JUMP_VELOCITY
+		else:
+			jump_start_time_ms = Time.get_ticks_msec()
 	if event.is_action_released("jump") and is_on_floor():
 		var jump_held_time_ms: int = Time.get_ticks_msec() - jump_start_time_ms
 		var time_held_fraction = clamp(float(jump_held_time_ms) / float(jump_held_max_time_ms), 0, 1)
@@ -30,7 +45,7 @@ func _physics_process(delta):
 		
 		
 	# Get the input direction: -1, 0, 1
-	var direction = Input.get_axis("move_left", "move_right")
+	direction = Input.get_axis("move_left", "move_right")
 	
 	# Flip the Sprite
 	if direction > 0:
