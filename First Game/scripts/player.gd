@@ -15,8 +15,6 @@ var direction
 @onready var animated_sprite = $AnimatedSprite2D
 var can_change_direction = true
 
-
-
 func _ready():
 	if cliff_detector != null:
 		var children = get_children()
@@ -42,7 +40,7 @@ func _unhandled_input(event):
 		# how long relative to max time (from 0 to 1)
 		var time_held_fraction = clamp(float(jump_held_time_ms) / float(jump_held_max_time_ms), 0, 1)
 		# plug those values into a curve and get the additional jump value
-		var additional_jump = float(JUMP_VELOCITY)*jump_held_modifier*jump_height_curve.sample(time_held_fraction)
+		var additional_jump = float(JUMP_VELOCITY) * jump_held_modifier * jump_height_curve.sample(time_held_fraction)
 		velocity.y = JUMP_VELOCITY + additional_jump
 		jump_start_time_ms = 0
 		isJumping = false
@@ -55,28 +53,25 @@ func _physics_process(delta):
 		can_change_direction = false
 	else:
 		isJumping = false
-		
 
-		
 	# Get the input direction: -1, 0, 1
 	if not isJumping:
 		direction = Input.get_axis("move_left", "move_right")
 	else:
 		velocity.x = velocity.x
-		
-	
+
 	# Flip the Sprite
 	if direction > 0:
 		animated_sprite.flip_h = false
 	elif direction < 0:
 		animated_sprite.flip_h = true
-	
+
 	if not can_change_direction:
-		velocity.x = 0;
-	
+		velocity.x = 0
+	print(isJumping)
 	# Play animations
 	if is_on_floor():
-		if jump_start_time_ms != 0:
+		if jump_start_time_ms != 0 and isJumping:  # Added isJumping check here
 			# should be charging animation
 			animated_sprite.play("jump")
 		elif direction == 0:
@@ -85,9 +80,7 @@ func _physics_process(delta):
 			animated_sprite.play("run")
 	else:
 		animated_sprite.play("jump")
-	
 
-		
 	# Apply movement
 	if not is_on_floor():
 		if direction and not isJumping:
