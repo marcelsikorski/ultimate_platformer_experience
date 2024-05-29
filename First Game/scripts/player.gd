@@ -8,7 +8,7 @@ const SPEED = 180.0
 const JUMP_VELOCITY = -300.0
 var jump_start_time_ms: int
 var isJumping: bool = false
-var isJumpHeld: bool = false
+var isChargingJump: bool = false
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export var cliff_detector: CliffDetector
@@ -29,25 +29,28 @@ func wants_to_jump_imediately()->bool:
 	return direction != 0 #and cliff_detector.is_at_the_edge(direction)
 
 func _unhandled_input(event):
-	isJumpHeld = event.is_action("jump")
-	if event.is_action_pressed("jump") and is_on_floor():
-		if wants_to_jump_imediately():
-			# this means the player is near a cliff
-			velocity.y = JUMP_VELOCITY
-		else:
-			# get ms since start of the engine
-			jump_start_time_ms = Time.get_ticks_msec()
-		isJumping = true
-	if event.is_action_released("jump") and is_on_floor():
-		# how long was "jump" pressed for
-		var jump_held_time_ms: int = Time.get_ticks_msec() - jump_start_time_ms
-		# how long relative to max time (from 0 to 1)
-		var time_held_fraction = clamp(float(jump_held_time_ms) / float(jump_held_max_time_ms), 0, 1)
-		# plug those values into a curve and get the additional jump value
-		var additional_jump = float(JUMP_VELOCITY)*jump_held_modifier*jump_height_curve.sample(time_held_fraction)
-		velocity.y = JUMP_VELOCITY + additional_jump
-		jump_start_time_ms = 0
-		isJumping = false
+	if event.is_action_pressed("jump"):
+		isChargingJump = true
+		if is_on_floor():
+			if wants_to_jump_imediately():
+				# this means the player is near a cliff
+				velocity.y = JUMP_VELOCITY
+			else:
+				# get ms since start of the engine
+				jump_start_time_ms = Time.get_ticks_msec()
+			isJumping = true
+	if event.is_action_released("jump"):
+		isChargingJump = false		
+		if is_on_floor():
+			# how long was "jump" pressed for
+			var jump_held_time_ms: int = Time.get_ticks_msec() - jump_start_time_ms
+			# how long relative to max time (from 0 to 1)
+			var time_held_fraction = clamp(float(jump_held_time_ms) / float(jump_held_max_time_ms), 0, 1)
+			# plug those values into a curve and get the additional jump value
+			var additional_jump = float(JUMP_VELOCITY)*jump_held_modifier*jump_height_curve.sample(time_held_fraction)
+			velocity.y = JUMP_VELOCITY + additional_jump
+			jump_start_time_ms = 0
+			isJumping = false
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -78,7 +81,7 @@ func _physics_process(delta):
 
 	# Play animations
 	if is_on_floor():
-		if jump_start_time_ms != 0:
+		if jump_start_time_ms != 0 or isChargingJump:
 			# should be charging animation
 			animated_sprite.play("jump")
 		elif direction == 0:
