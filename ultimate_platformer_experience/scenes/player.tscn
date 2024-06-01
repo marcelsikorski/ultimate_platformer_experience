@@ -185,3 +185,13 @@ autoplay = "idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -5)
 shape = SubResource("CircleShape2D_bvcm0")
+
+[node name="RightWallDetection" type="RayCast2D" parent="."]
+position = Vector2(0, -5)
+rotation = -1.5708
+target_position = Vector2(0, 10)
+
+[node name="LeftWallDetection" type="RayCast2D" parent="."]
+position = Vector2(0, -5)
+rotation = 1.5708
+target_position = Vector2(0, 10)

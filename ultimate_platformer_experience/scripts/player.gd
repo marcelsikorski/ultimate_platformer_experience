@@ -25,14 +25,14 @@ func _ready():
 			if child.name == "CliffDetector":
 				cliff_detector = child
 
-func wants_to_jump_imediately()->bool:
+func wants_to_jump_immediately()->bool:
 	return direction != 0 #and cliff_detector.is_at_the_edge(direction)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("jump"):
 		isChargingJump = true
 		if is_on_floor():
-			if wants_to_jump_imediately():
+			if wants_to_jump_immediately():
 				# this means the player is near a cliff
 				velocity.y = JUMP_VELOCITY
 			else:
@@ -41,7 +41,7 @@ func _unhandled_input(event):
 			isJumping = true
 	if event.is_action_released("jump"):
 		isChargingJump = false		
-		if is_on_floor():
+		if is_on_floor() or is_player_next_to_wall():
 			# how long was "jump" pressed for
 			var jump_held_time_ms: int = Time.get_ticks_msec() - jump_start_time_ms
 			# how long relative to max time (from 0 to 1)
@@ -51,6 +51,11 @@ func _unhandled_input(event):
 			velocity.y = JUMP_VELOCITY + additional_jump
 			jump_start_time_ms = 0
 			isJumping = false
+
+func is_player_next_to_wall():
+	if  $LeftWallDetection.is_colliding() or $RightWallDetection.is_colliding():
+		print("wall detected!")
+	return $LeftWallDetection.is_colliding() or $RightWallDetection.is_colliding()
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -80,7 +85,7 @@ func _physics_process(delta):
 		velocity.x = 0;
 
 	# Play animations
-	if is_on_floor():
+	if is_on_floor() or is_player_next_to_wall():
 		if jump_start_time_ms != 0 or isChargingJump:
 			# should be charging animation
 			animated_sprite.play("jump")
@@ -91,10 +96,10 @@ func _physics_process(delta):
 	else:
 		animated_sprite.play("jump")
 	
-
+		
 		
 	# Apply movement
-	if not is_on_floor():
+	if not is_on_floor() or is_player_next_to_wall():
 		if direction and not isJumping:
 			velocity.x = direction * SPEED
 		else:
