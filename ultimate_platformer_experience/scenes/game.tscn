@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://cuv4vme4rwno0"]
+[gd_scene load_steps=25 format=3 uid="uid://cuv4vme4rwno0"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_l4ihi"]
 [ext_resource type="PackedScene" uid="uid://dqnaqj8yb6hwd" path="res://scenes/player.tscn" id="1_rbmkf"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dtrbka1ef726o" path="res://scenes/killzone.tscn" id="5_x8euu"]
 [ext_resource type="PackedScene" uid="uid://d2w2i5h0lhc6l" path="res://scenes/slime.tscn" id="6_l0s6b"]
 [ext_resource type="FontFile" uid="uid://dbjl1e6kdxpl6" path="res://assets/fonts/PixelOperator8.ttf" id="7_8cblx"]
+[ext_resource type="Script" path="res://scripts/PathFollow2D.gd" id="10_4eam3"]
 [ext_resource type="Script" path="res://scripts/finish_line.gd" id="10_nyxvp"]
 [ext_resource type="Texture2D" uid="uid://qgm1suem7mub" path="res://photo_2024-04-30_20-22-06.jpg" id="11_hslcr"]
 [ext_resource type="PackedScene" uid="uid://dwbhib3m2yck2" path="res://scenes/bird.tscn" id="13_k78b3"]
@@ -467,6 +468,14 @@ _data = {
 "move": SubResource("Animation_bm7kf")
 }
 
+[sub_resource type="Curve2D" id="Curve2D_c7uco"]
+_data = {
+"points": PackedVector2Array(-35.9182, -0.0778532, 35.9182, 0.0778532, 254, -55, -33, 38, 33, -38, 344, -34, -17.5, 41, 17.5, -41, 440, -19, 0, 0, 0, 0, 427, -65, 92.6042, -1.25992, -92.6042, 1.25992, 306, -93, 0, 0, 0, 0, 254, -55)
+}
+point_count = 6
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jx11s"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2186x"]
 size = Vector2(33, 83)
 
@@ -562,9 +571,6 @@ position = Vector2(78, -189)
 
 [node name="Platforms" type="Node" parent="."]
 
-[node name="Platform" parent="Platforms" instance=ExtResource("3_cmfc3")]
-position = Vector2(32, 9)
-
 [node name="Platform2" parent="Platforms" node_paths=PackedStringArray("animation_player_optional") instance=ExtResource("3_cmfc3")]
 position = Vector2(370, 52)
 animation_player_optional = NodePath("AnimationPlayer")
@@ -576,10 +582,28 @@ libraries = {
 autoplay = "move"
 
 [node name="Slime" parent="." instance=ExtResource("6_l0s6b")]
-position = Vector2(529, 81)
+position = Vector2(525, 47)
 
-[node name="Bird" parent="." instance=ExtResource("13_k78b3")]
-position = Vector2(300, -50)
+[node name="Path2D" type="Path2D" parent="."]
+position = Vector2(-4, -15)
+curve = SubResource("Curve2D_c7uco")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
+position = Vector2(254, -55)
+rotation = 0.00216754
+rotates = false
+script = ExtResource("10_4eam3")
+
+[node name="Bird" parent="Path2D/PathFollow2D" instance=ExtResource("13_k78b3")]
+
+[node name="Area2D" type="Area2D" parent="Path2D/PathFollow2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D/Area2D"]
+scale = Vector2(0.01, 0.01)
+texture = ExtResource("11_hslcr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Path2D/PathFollow2D/Area2D"]
+shape = SubResource("CircleShape2D_jx11s")
 
 [node name="Labels" type="Node" parent="."]
 
@@ -674,7 +698,7 @@ shape = SubResource("RectangleShape2D_2186x")
 [node name="mordy" type="Node" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="mordy"]
-position = Vector2(75, 40)
+position = Vector2(83, 24)
 scale = Vector2(0.05, 0.05)
 texture = ExtResource("11_hslcr")
 
