@@ -95,7 +95,6 @@ func _physics_process(delta):
 		animated_sprite.play("jump")
 	
 		
-		
 	# Apply movement
 	if not is_on_floor() or is_player_next_to_wall():
 		if direction and not isJumping:
