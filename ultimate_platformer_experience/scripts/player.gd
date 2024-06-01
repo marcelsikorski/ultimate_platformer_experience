@@ -53,8 +53,6 @@ func _unhandled_input(event):
 			isJumping = false
 
 func is_player_next_to_wall():
-	if  $LeftWallDetection.is_colliding() or $RightWallDetection.is_colliding():
-		print("wall detected!")
 	return $LeftWallDetection.is_colliding() or $RightWallDetection.is_colliding()
 
 func _physics_process(delta):
