@@ -96,7 +96,7 @@ func _physics_process(delta):
 	
 		
 	# Apply movement
-	if not is_on_floor() or is_player_next_to_wall():
+	if not is_on_floor() or not is_player_next_to_wall():
 		if direction and not isJumping:
 			velocity.x = direction * SPEED
 		else:
